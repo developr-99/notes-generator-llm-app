@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local Meeting Notes Generator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎙️ Local Meeting Notes Generator</h1>
+            <p>Record live audio or upload files to generate structured meeting notes - completely private and local</p>
+            <div class="status-indicator" id="statusIndicator">
+                <span id="statusText">Checking system status...</span>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Recording and Upload Section -->
+            <section class="input-section" id="inputSection">
+                
+                <!-- Live Recording (Primary Feature) -->
+                <div class="recording-area" id="recordingArea">
+                    <div class="recording-content">
+                        <div class="recording-icon" id="recordingIcon">🎙️</div>
+                        <h3 id="recordingTitle">Record Your Meeting</h3>
+                        <p class="recording-text" id="recordingText">
+                            Click the button below to start recording your meeting or conversation
+                        </p>
+                        <div class="recording-timer" id="recordingTimer" style="display: none;">
+                            <span class="timer-text">Recording: </span>
+                            <span class="timer-value" id="timerValue">00:00</span>
+                        </div>
+                        <div class="recording-controls">
+                            <button class="record-button" id="recordButton">
+                                <span class="record-icon">🔴</span>
+                                <span class="record-text">Start Recording</span>
+                            </button>
+                            <button class="stop-button" id="stopButton" style="display: none;">
+                                <span class="stop-icon">⏹️</span>
+                                <span class="stop-text">Stop Recording</span>
+                            </button>
+                        </div>
+                        <div class="recording-status" id="recordingStatus"></div>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span class="divider-text">OR</span>
+                </div>
+
+                <!-- File Upload (Secondary Feature) -->
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-icon">📁</div>
+                    <h3>Upload Audio File</h3>
+                    <p class="upload-text">
+                        Drag and drop your audio file here, or click to browse
+                    </p>
+                    <div class="supported-formats">
+                        <strong>Supported formats:</strong> MP3, WAV, M4A, FLAC, OGG, MP4, WebM
+                    </div>
+                    <button class="upload-button" id="uploadButton">Choose Audio File</button>
+                    <input type="file" class="file-input" id="fileInput" 
+                           accept="audio/*,.mp3,.wav,.m4a,.flac,.ogg,.mp4,.webm">
+                </div>
+            </section>
+
+            <!-- Processing Section -->
+            <section class="processing-section" id="processingSection" style="display: none;">
+                <div class="processing-content">
+                    <div class="spinner"></div>
+                    <h3 id="processingTitle">Processing your audio...</h3>
+                    <p id="processingMessage">This may take a few minutes depending on the length of your recording</p>
+                    <div class="progress-steps">
+                        <div class="step" id="step1">
+                            <span class="step-number">1</span>
+                            <span class="step-text">Uploading file</span>
+                        </div>
+                        <div class="step" id="step2">
+                            <span class="step-number">2</span>
+                            <span class="step-text">Converting audio</span>
+                        </div>
+                        <div class="step" id="step3">
+                            <span class="step-number">3</span>
+                            <span class="step-text">Transcribing speech</span>
+                        </div>
+                        <div class="step" id="step4">
+                            <span class="step-number">4</span>
+                            <span class="step-text">Analyzing content</span>
+                        </div>
+                        <div class="step" id="step5">
+                            <span class="step-number">5</span>
+                            <span class="step-text">Generating notes</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section class="error-section" id="errorSection" style="display: none;">
+                <div class="error-content">
+                    <div class="error-icon">⚠️</div>
+                    <h3>Something went wrong</h3>
+                    <p id="errorMessage"></p>
+                    <button class="retry-button" id="retryButton">Try Again</button>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="results-header">
+                    <h2>📋 Meeting Notes Generated Successfully</h2>
+                    <div class="stats">
+                        <span id="wordCount"></span> |
+                        <span id="generatedTime"></span>
+                    </div>
+                </div>
+
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>📝 Executive Summary</h3>
+                        <div class="result-content" id="summaryContent"></div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>🗣️ Key Discussion Points</h3>
+                        <div class="result-content" id="notesContent"></div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>✅ Action Items</h3>
+                        <div class="result-content" id="actionItemsContent"></div>
+                    </div>
+
+                    <div class="result-card">
+                        <h3>📊 Meeting Outline</h3>
+                        <div class="result-content" id="outlineContent"></div>
+                    </div>
+
+                    <div class="result-card full-width">
+                        <h3>🎯 Full Transcript</h3>
+                        <div class="result-content transcript" id="transcriptContent"></div>
+                    </div>
+                </div>
+
+                <div class="download-section">
+                    <h3>💾 Download Your Notes</h3>
+                    <div class="download-buttons">
+                        <button class="download-button" id="downloadTxt">
+                            📄 Download as TXT
+                        </button>
+                        <button class="download-button" id="downloadJson">
+                            📊 Download as JSON
+                        </button>
+                        <button class="download-button secondary" id="processNewFile">
+                            🔄 Process Another File
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
