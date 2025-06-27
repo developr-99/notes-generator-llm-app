@@ -42,8 +42,8 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Frontend build
-frontend/dist/
+# Frontend build (keep dist for deployment)
+# frontend/dist/
 frontend/.vite/
 
 # Database
