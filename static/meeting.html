@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting - Local Meeting Notes AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/meeting.css">
+</head>
+
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <button class="back-button" onclick="window.location.href='/'">
+                    ← Back to Meetings
+                </button>
+                <div class="meeting-info">
+                    <!-- Editable Meeting Title -->
+                    <div class="editable-field" id="titleField">
+                        <h1 id="meetingTitle" class="editable-text" onclick="editField('title')">Loading...</h1>
+                        <div class="edit-controls" id="titleControls" style="display: none;">
+                            <input type="text" id="titleInput" class="edit-input">
+                            <div class="edit-buttons">
+                                <button class="btn-save" onclick="saveField('title')">✓</button>
+                                <button class="btn-cancel" onclick="cancelEdit('title')">✗</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="meeting-details">
+                        <!-- Editable Date & Time -->
+                        <div class="editable-field" id="datetimeField">
+                            <span id="meetingDateTime" class="editable-text" onclick="editField('datetime')">Date & Time</span>
+                            <div class="edit-controls" id="datetimeControls" style="display: none;">
+                                <input type="date" id="dateInput" class="edit-input">
+                                <input type="time" id="timeInput" class="edit-input">
+                                <div class="edit-buttons">
+                                    <button class="btn-save" onclick="saveField('datetime')">✓</button>
+                                    <button class="btn-cancel" onclick="cancelEdit('datetime')">✗</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Editable Status -->
+                        <div class="editable-field" id="statusField">
+                            <span class="status-badge" id="meetingStatus" onclick="editField('status')">Status</span>
+                            <div class="edit-controls" id="statusControls" style="display: none;">
+                                <select id="statusSelect" class="edit-input">
+                                    <option value="planned">Planned</option>
+                                    <option value="in-progress">In Progress</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="cancelled">Cancelled</option>
+                                </select>
+                                <div class="edit-buttons">
+                                    <button class="btn-save" onclick="saveField('status')">✓</button>
+                                    <button class="btn-cancel" onclick="cancelEdit('status')">✗</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="editModeBtn" onclick="toggleEditMode()">
+                    ✏️ Edit Mode
+                </button>
+                <button class="btn btn-danger" id="deleteMeetingBtn" onclick="deleteMeeting()">
+                    🗑️ Delete
+                </button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Meeting Info Section -->
+            <section class="meeting-info-section">
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3>📋 Agenda</h3>
+                        <button class="btn-edit-small" onclick="editField('agenda')" aria-label="Edit agenda">✏️</button>
+                    </div>
+                    
+                    <!-- Editable Agenda -->
+                    <div class="editable-field" id="agendaField">
+                        <div id="meetingAgenda" class="agenda-content editable-text" onclick="editField('agenda')">
+                            No agenda specified
+                        </div>
+                        <div class="edit-controls" id="agendaControls" style="display: none;">
+                            <textarea id="agendaInput" class="edit-textarea" rows="4" placeholder="Meeting agenda, topics to discuss..."></textarea>
+                            <div class="edit-buttons">
+                                <button class="btn-save" onclick="saveField('agenda')">✓ Save</button>
+                                <button class="btn-cancel" onclick="cancelEdit('agenda')">✗ Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <div class="card-header">
+                        <h3>👥 Participants</h3>
+                        <button class="btn-edit-small" onclick="editField('participants')" title="Edit Participants" aria-label="Edit participants">✏️</button>
+                    </div>
+                    
+                    <!-- Editable Participants -->
+                    <div class="editable-field" id="participantsField">
+                        <div id="meetingParticipants" class="participants-list editable-text" onclick="editField('participants')" role="button" tabindex="0" aria-label="Click to edit participants">
+                            No participants added
+                        </div>
+                        <div class="edit-controls" id="participantsControls" style="display: none;">
+                            <fieldset id="participantsEditor" aria-label="Edit participants">
+                                <legend class="sr-only">Participant Information</legend>
+                                <div class="participant-input-group">
+                                    <input type="text" placeholder="Name *" class="participant-name" aria-label="Participant name" required>
+                                    <input type="email" placeholder="Email (optional)" class="participant-email" aria-label="Participant email">
+                                    <input type="text" placeholder="Role (optional)" class="participant-role" aria-label="Participant role">
+                                    <button type="button" class="btn-remove-participant" onclick="removeParticipant(this)" aria-label="Remove this participant">−</button>
+                                </div>
+                            </fieldset>
+                            <button type="button" class="btn btn-secondary btn-small" onclick="addParticipant()" aria-label="Add new participant">+ Add Participant</button>
+                            <div class="edit-buttons">
+                                <button class="btn-save" onclick="saveField('participants')" aria-label="Save participants">✓ Save</button>
+                                <button class="btn-cancel" onclick="cancelEdit('participants')" aria-label="Cancel editing participants">✗ Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </section>
+
+            <!-- Audio File Info (if exists) -->
+            <section class="audio-info-section" id="audioInfoSection" style="display: none;">
+                <div class="info-card">
+                    <h3>🎵 Audio File</h3>
+                    <div id="audioFileInfo">
+                        <p><strong>File:</strong> <span id="audioFileName">No audio file</span></p>
+                        <p><strong>Location:</strong> <code id="audioFilePath">N/A</code></p>
+                        <button class="btn btn-secondary btn-small" onclick="playAudio()" id="playAudioBtn">▶️ Play Audio</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recording Section (shown if no transcript) -->
+            <section class="recording-section" id="recordingSection">
+                <div class="recording-card">
+                    <h3>🎙️ Record Meeting</h3>
+                    <p>Start recording to generate AI-powered meeting notes</p>
+                    
+                    <!-- Recording Controls -->
+                    <div class="recording-controls">
+                        <div class="recording-area" id="recordingArea">
+                            <div class="recording-icon" id="recordingIcon">🎙️</div>
+                            <div class="recording-status" id="recordingStatus">
+                                Ready to record
+                            </div>
+                            <div class="recording-timer" id="recordingTimer" style="display: none;">
+                                <span id="timerValue">00:00</span>
+                            </div>
+                        </div>
+                        
+                        <div class="control-buttons">
+                            <button class="btn btn-danger btn-large" id="recordButton">
+                                🔴 Start Recording
+                            </button>
+                            <button class="btn btn-secondary btn-large" id="stopButton" style="display: none;">
+                                ⏹️ Stop Recording
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- OR Divider -->
+                    <div class="divider">
+                        <span>OR</span>
+                    </div>
+                    
+                    <!-- File Upload -->
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📁</div>
+                        <p>Upload an audio file</p>
+                        <button class="btn btn-primary" id="uploadButton">
+                            Choose Audio File
+                        </button>
+                        <input type="file" id="fileInput" accept="audio/*" style="display: none;">
+                        <div class="supported-formats">
+                            Supports: MP3, WAV, M4A, FLAC, OGG, MP4, WebM
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Processing Section -->
+            <section class="processing-section" id="processingSection" style="display: none;">
+                <div class="processing-card">
+                    <div class="spinner"></div>
+                    <h3 id="processingTitle">Processing your audio...</h3>
+                    <p id="processingMessage">This may take a few minutes</p>
+                    <div class="progress-steps">
+                        <div class="step" id="step1">
+                            <span class="step-number">1</span>
+                            <span class="step-text">Uploading</span>
+                        </div>
+                        <div class="step" id="step2">
+                            <span class="step-number">2</span>
+                            <span class="step-text">Converting</span>
+                        </div>
+                        <div class="step" id="step3">
+                            <span class="step-number">3</span>
+                            <span class="step-text">Transcribing</span>
+                        </div>
+                        <div class="step" id="step4">
+                            <span class="step-number">4</span>
+                            <span class="step-text">Analyzing</span>
+                        </div>
+                        <div class="step" id="step5">
+                            <span class="step-number">5</span>
+                            <span class="step-text">Generating</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+ <!-- Results Section - UPDATED for 3 sections -->
+<section class="results-section" id="resultsSection" style="display: none;">
+    <div class="results-header">
+        <h2>📋 Meeting Notes Generated</h2>
+        <div class="results-meta">
+            <span id="wordCount">0 words</span>
+            <span id="generatedTime">Generated now</span>
+        </div>
+    </div>
+
+    <div class="results-grid-three">
+        <!-- 1. Executive Summary Card -->
+        <div class="result-card">
+            <div class="card-header">
+                <h3>📝 Executive Summary</h3>
+                <button class="btn-edit-small" onclick="editField('summary')" title="Edit Summary">✏️ Edit</button>
+            </div>
+            <div class="editable-field" id="summaryField">
+                <div class="result-content editable-text" id="summaryContent" onclick="editField('summary')"></div>
+                <div class="edit-controls" id="summaryControls" style="display: none;">
+                    <textarea id="summaryInput" class="edit-textarea" rows="8" placeholder="Enter comprehensive meeting summary..."></textarea>
+                    <div class="edit-buttons">
+                        <button class="btn-save" onclick="saveField('summary')">✓ Save Changes</button>
+                        <button class="btn-cancel" onclick="cancelEdit('summary')">✗ Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Action Items Card -->
+        <div class="result-card">
+            <div class="card-header">
+                <h3>✅ Action Items & Commitments</h3>
+                <button class="btn-edit-small" onclick="editField('actions')" title="Edit Action Items">✏️ Edit</button>
+            </div>
+            <div class="editable-field" id="actionsField">
+                <div class="result-content editable-text" id="actionItemsContent" onclick="editField('actions')"></div>
+                <div class="edit-controls" id="actionsControls" style="display: none;">
+                    <textarea id="actionsInput" class="edit-textarea" rows="8" placeholder="Enter action items, deadlines, and commitments..."></textarea>
+                    <div class="edit-buttons">
+                        <button class="btn-save" onclick="saveField('actions')">✓ Save Changes</button>
+                        <button class="btn-cancel" onclick="cancelEdit('actions')">✗ Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Complete Meeting Outline Card -->
+        <div class="result-card">
+            <div class="card-header">
+                <h3>📊 Complete Meeting Outline</h3>
+                <button class="btn-edit-small" onclick="editField('outline')" title="Edit Outline">✏️ Edit</button>
+            </div>
+            <div class="editable-field" id="outlineField">
+                <div class="result-content editable-text" id="outlineContent" onclick="editField('outline')"></div>
+                <div class="edit-controls" id="outlineControls" style="display: none;">
+                    <textarea id="outlineInput" class="edit-textarea" rows="8" placeholder="Enter structured meeting outline..."></textarea>
+                    <div class="edit-buttons">
+                        <button class="btn-save" onclick="saveField('outline')">✓ Save Changes</button>
+                        <button class="btn-cancel" onclick="cancelEdit('outline')">✗ Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Full Transcript Card - NON-EDITABLE -->
+        <div class="result-card full-width transcript-card">
+            <div class="card-header">
+                <h3>🎯 Full Transcript</h3>
+                <span class="transcript-info">Read-only transcript</span>
+            </div>
+            <div class="result-content transcript" id="transcriptContent">
+                <!-- Transcript content will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <div class="download-section">
+        <h3>💾 Download Meeting Notes</h3>
+        <div class="download-buttons">
+            <button class="btn btn-primary" id="downloadTxt">
+                📄 Download as TXT
+            </button>
+            <button class="btn btn-secondary" id="downloadJson">
+                📊 Download as JSON
+            </button>
+        </div>
+    </div>
+</section>
+
+            <!-- Error Section -->
+            <section class="error-section" id="errorSection" style="display: none;">
+                <div class="error-card">
+                    <div class="error-icon">⚠️</div>
+                    <h3>Something went wrong</h3>
+                    <p id="errorMessage">An error occurred</p>
+                    <button class="btn btn-primary" id="retryButton">
+                        Try Again
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Save Confirmation Modal -->
+    <div class="modal" id="saveModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💾 Saving Changes</h3>
+            </div>
+            <div class="modal-body">
+                <div class="save-status">
+                    <div class="spinner-small"></div>
+                    <p id="saveMessage">Saving your changes...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/meeting.js"></script>
+</body>
+</html>

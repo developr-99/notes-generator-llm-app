@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Management System</title>
+    <link rel="stylesheet" href="/static/home.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>🎙️ Meeting Management System</h1>
+                <p>Organize, record, and analyze your meetings with AI-powered insights</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" id="newMeetingBtn">
+                    <span class="btn-icon">➕</span>
+                    New Meeting
+                </button>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search meetings..." class="search-input">
+                    <button class="search-btn" id="searchBtn">🔍</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Quick Stats -->
+            <section class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalMeetings">0</div>
+                    <div class="stat-label">Total Meetings</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="plannedMeetings">0</div>
+                    <div class="stat-label">Planned</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedMeetings">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalHours">0</div>
+                    <div class="stat-label">Hours Recorded</div>
+                </div>
+            </section>
+
+            <!-- Filters -->
+            <section class="filters-section">
+                <div class="filter-group">
+                    <label for="statusFilter">Status:</label>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="">All</option>
+                        <option value="planned">Planned</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sortBy">Sort by:</label>
+                    <select id="sortBy" class="filter-select">
+                        <option value="date_desc">Date (Newest)</option>
+                        <option value="date_asc">Date (Oldest)</option>
+                        <option value="title_asc">Title (A-Z)</option>
+                        <option value="title_desc">Title (Z-A)</option>
+                    </select>
+                </div>
+            </section>
+
+            <!-- Meetings List -->
+            <section class="meetings-section">
+                <div class="section-header">
+                    <h2>Recent Meetings</h2>
+                    <span class="meeting-count" id="meetingCount">0 meetings</span>
+                </div>
+                
+                <div class="meetings-grid" id="meetingsGrid">
+                    <!-- Meetings will be loaded here -->
+                </div>
+                
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">📅</div>
+                    <h3>No meetings yet</h3>
+                    <p>Create your first meeting to get started with AI-powered meeting notes</p>
+                    <button class="btn btn-primary" onclick="showNewMeetingModal()">
+                        Create First Meeting
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- New Meeting Modal -->
+        <div class="modal" id="newMeetingModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📅 Create New Meeting</h2>
+                    <button class="modal-close" id="closeModal">&times;</button>
+                </div>
+                <form id="newMeetingForm" class="modal-body">
+                    <div class="form-group">
+                        <label for="meetingTitle">Meeting Title *</label>
+                        <input type="text" id="meetingTitle" name="title" required 
+                               placeholder="e.g., Weekly Team Standup, Client Review, Project Planning">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="meetingAgenda">Agenda</label>
+                        <textarea id="meetingAgenda" name="agenda" rows="4" 
+                                  placeholder="Meeting agenda, topics to discuss, objectives..."></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="meetingDate">Date *</label>
+                            <input type="date" id="meetingDate" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="meetingTime">Time *</label>
+                            <input type="time" id="meetingTime" name="time" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Participants (Optional)</label> <!-- REMOVED for= attribute -->
+                        <div class="participants-container">
+                            <div class="participant-input-group">
+                                <input type="text" placeholder="Name" class="participant-name" id="participantName1" aria-label="Participant name">
+                                <input type="email" placeholder="Email (optional)" class="participant-email" id="participantEmail1" aria-label="Participant email">
+                                <input type="text" placeholder="Role" class="participant-role" id="participantRole1" aria-label="Participant role">
+                                <button type="button" class="btn-remove-participant" aria-label="Remove participant">−</button>
+                            </div>
+                        </div>
+                        <button type="button" id="addParticipantBtn" class="btn btn-secondary btn-small" aria-label="Add new participant">
+                            + Add Participant
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="meetingTags">Tags (Optional)</label>
+                        <input type="text" id="meetingTags" name="tags" 
+                               placeholder="team, project, review, planning (comma-separated)">
+                        <small>Use tags to categorize and find meetings easily</small>
+                    </div>
+                </form>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" form="newMeetingForm" class="btn btn-primary">
+                        Create Meeting
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Meeting Modal -->
+        <div class="modal" id="editMeetingModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>📝 Edit Meeting</h2>
+                    <button class="modal-close" id="closeEditModal">&times;</button>
+                </div>
+                <form id="editMeetingForm" class="modal-body">
+                    <!-- Same form fields as new meeting -->
+                    <div class="form-group">
+                        <label for="editMeetingTitle">Meeting Title *</label>
+                        <input type="text" id="editMeetingTitle" name="title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editMeetingAgenda">Agenda</label>
+                        <textarea id="editMeetingAgenda" name="agenda" rows="4"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="editMeetingDate">Date *</label>
+                            <input type="date" id="editMeetingDate" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="editMeetingTime">Time *</label>
+                            <input type="time" id="editMeetingTime" name="time" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editMeetingStatus">Status</label>
+                        <select id="editMeetingStatus" name="status">
+                            <option value="planned">Planned</option>
+                            <option value="in-progress">In Progress</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </form>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteMeetingBtn">Delete</button>
+                    <button type="button" class="btn btn-secondary" id="cancelEditBtn">Cancel</button>
+                    <button type="submit" form="editMeetingForm" class="btn btn-primary">
+                        Save Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/home.js"></script>
+</body>
+</html>

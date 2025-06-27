@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Meeting Page</title>
+</head>
+<body>
+    <h1>Test Meeting Page</h1>
+    <div id="debug"></div>
+    
+    <script>
+        console.log('🧪 Test page loaded');
+        console.log('🧪 URL:', window.location.href);
+        console.log('🧪 Pathname:', window.location.pathname);
+        
+        // Extract meeting ID like the real page does
+        const meetingId = window.location.pathname.split('/').pop();
+        console.log('🧪 Meeting ID:', meetingId);
+        
+        document.getElementById('debug').innerHTML = `
+            <p>URL: ${window.location.href}</p>
+            <p>Pathname: ${window.location.pathname}</p>
+            <p>Meeting ID: ${meetingId}</p>
+        `;
+        
+        // Test API call
+        async function testApi() {
+            try {
+                console.log('🧪 Testing API call...');
+                const response = await fetch(`/api/meetings/${meetingId}`);
+                console.log('🧪 API Response:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('🧪 Meeting data:', data.title);
+                    document.getElementById('debug').innerHTML += `<p>✅ Meeting found: ${data.title}</p>`;
+                } else {
+                    console.log('🧪 API Error:', response.status);
+                    document.getElementById('debug').innerHTML += `<p>❌ API Error: ${response.status}</p>`;
+                }
+            } catch (error) {
+                console.log('🧪 Network Error:', error);
+                document.getElementById('debug').innerHTML += `<p>❌ Network Error: ${error.message}</p>`;
+            }
+        }
+        
+        testApi();
+    </script>
+</body>
+</html>

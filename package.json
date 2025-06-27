@@ -1,0 +1,37 @@
+{
+  "name": "meeting-notes-app",
+  "version": "1.0.0",
+  "description": "A privacy-first meeting notes generator that transforms audio recordings into structured meeting documentation using local AI models. No data ever leaves your computer!",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "server": "python main.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/developr-99/notes-generator-llm-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/developr-99/notes-generator-llm-app/issues"
+  },
+  "homepage": "https://github.com/developr-99/notes-generator-llm-app#readme",
+  "dependencies": {
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@types/react-router-dom": "^5.3.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.6.0",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0"
+  }
+}
